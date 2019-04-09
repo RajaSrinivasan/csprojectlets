@@ -1,0 +1,29 @@
+﻿<Properties StartupConfiguration="{91FB9698-3482-4713-8879-980533BFEE0E}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Cli.cs">
+    <Files>
+      <File FileName="Search.cs" Line="10" Column="36" />
+      <File FileName="Cli.cs" Line="33" Column="1" />
+      <File FileName="Impl.cs" Line="1" Column="1" />
+      <File FileName="../dump/dump/cli.cs" Line="25" Column="16" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="search" expanded="True">
+            <Node name="search" expanded="True">
+              <Node name="Properties" expanded="True" />
+              <Node name="Cli.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.search PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
