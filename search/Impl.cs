@@ -51,7 +51,17 @@ namespace search
                 linenum++;
                 if (mycli.pattern)
                 {
-
+                    if (candidateexp.IsMatch(line))
+                    {
+                        occurrences++;
+                        if (occurrences == 1)
+                        {
+                            ShowHeader(filename);
+                        }
+                        String linenumstr = linenum.ToString("D5");
+                        Console.Write(linenumstr);
+                        Console.WriteLine($": {line}");
+                    }
                 }
                 else
                 {
