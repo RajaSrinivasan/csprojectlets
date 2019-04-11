@@ -88,7 +88,7 @@ namespace search
                             ShowHelp();
                             return;
                         }
-                        Console.WriteLine($"Argument [{arguments.Count}]={arg}");
+
                         if (candidate == null)
                         {
                             candidate = arg;
