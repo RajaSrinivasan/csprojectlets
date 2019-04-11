@@ -13,11 +13,20 @@ namespace search
         public bool pattern = false;
         public bool caseSensitive = false;
         public bool recursive = false;
-
+        public string candidate;
 
         private List<string> arguments = new List<string>() ;
         public List<string> Arguments { get => arguments; }
 
+        private void ShowOptions()
+        {
+            Console.WriteLine($"Pattern={pattern} Case sensitive={caseSensitive} recursive={recursive}");
+            Console.WriteLine($"Candidate={candidate}");
+            foreach (string arg in arguments)
+            {
+                Console.WriteLine(arg);
+            }
+        }
         private void ShowHelpLine(string sw, string longsw, string help)
         {
             Console.WriteLine($"-{sw} | --{longsw} \t- {help}");
@@ -26,6 +35,12 @@ namespace search
         public void ShowHelp()
         {
             Console.WriteLine($"{NAME} - {MAJOR_VERSION}.{MINOR_VERSION}");
+            Console.WriteLine("search [flags] <candidate> <target1> <target2> ...");
+            ShowHelpLine("h", "help", "show this message");
+            ShowHelpLine("v", "verbose", "be verbose");
+            ShowHelpLine("c", "case", "case sensitive searches");
+            ShowHelpLine("p", "pattern", "candidate is a pattern");
+            ShowHelpLine("r", "recursive", "search all files and directories below the directory");
         }
 
         public Cli(String []args)
@@ -33,9 +48,7 @@ namespace search
             if (args.Length < 2)
             {
                 ShowHelp();
-                ShowHelpLine("h", "help", "show this message");
-                ShowHelpLine("v", "verbose", "be verbose");
-                ShowHelpLine("c", "case", "case sensitive searches");
+
                 return;
             }
 
@@ -75,10 +88,23 @@ namespace search
                             ShowHelp();
                             return;
                         }
-                        this.arguments.Add(arg);
+                        Console.WriteLine($"Argument [{arguments.Count}]={arg}");
+                        if (candidate == null)
+                        {
+                            candidate = arg;
+                        }
+                        else
+                        {
+                            arguments.Add(arg);
+                        }
                         break;
 
                 }
+            }
+
+            if (verbose)
+            {
+                ShowOptions();
             }
         }
     }

@@ -3,8 +3,14 @@ namespace search
 {
     public class Impl
     {
-        public Impl()
+        Cli mycli;
+        public Impl(Cli cli)
         {
+            mycli = cli;
+            if (mycli.verbose)
+            {
+                Console.WriteLine("Starting search");
+            }
         }
     }
 }

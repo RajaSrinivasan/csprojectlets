@@ -7,7 +7,7 @@ namespace search
         public static void Main(string[] args)
         {
             Cli cli = new Cli(args);
-            Impl impl = new Impl();
+            Impl impl = new Impl(cli);
         }
     }
 }
