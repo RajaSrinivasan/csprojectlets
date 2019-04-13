@@ -13,6 +13,7 @@ namespace search
         public bool pattern = false;
         public bool caseSensitive = false;
         public bool recursive = false;
+        public string toplevel;
         public string candidate;
 
         private List<string> arguments = new List<string>() ;
@@ -20,7 +21,7 @@ namespace search
 
         private void ShowOptions()
         {
-            Console.WriteLine($"Pattern={pattern} Case sensitive={caseSensitive} recursive={recursive}");
+            Console.WriteLine($"Pattern={pattern} Case sensitive={caseSensitive} recursive={recursive} toplevel={toplevel}");
             Console.WriteLine($"Candidate={candidate}");
             foreach (string arg in arguments)
             {
@@ -29,7 +30,7 @@ namespace search
         }
         private void ShowHelpLine(string sw, string longsw, string help)
         {
-            Console.WriteLine($"-{sw} | --{longsw} \t- {help}");
+            Console.WriteLine($"-{sw}\t| --{longsw} \t- {help}");
         }
 
         public void ShowHelp()
@@ -40,7 +41,27 @@ namespace search
             ShowHelpLine("v", "verbose", "be verbose");
             ShowHelpLine("c", "case", "case sensitive searches");
             ShowHelpLine("p", "pattern", "candidate is a pattern");
-            ShowHelpLine("r", "recursive", "search all files and directories below the directory");
+
+            ShowHelpLine("r", "recursive", "search all files and directories below the specified directory");
+            ShowHelpLine("", "      ", "example: -r:. for current working directory");
+        }
+
+        private bool ExtractValue(string arg)
+        {
+            if (arg.StartsWith("-r:"))
+            {
+                toplevel = arg.Substring("-r:".Length );
+                if (toplevel.Length >= 1) return true;
+            }
+            if (arg.StartsWith("--recursive:"))
+            {
+                toplevel = arg.Substring("--recursive:".Length);
+                if (toplevel.Length >=1) return true;
+            }
+
+            Console.WriteLine($"Unrecognized switch {arg}");
+            ShowHelp();
+            return false;
         }
 
         public Cli(String []args)
@@ -71,10 +92,6 @@ namespace search
                         caseSensitive = true;
                         break;
 
-                    case "-r":
-                    case "--recursive":
-                        recursive = true;
-                        break;
 
                     case "-p":
                     case "--pattern":
@@ -82,20 +99,24 @@ namespace search
                         break;
 
                     default:
-                        if (arg.StartsWith("-"))
+                        if (arg.StartsWith("-r"))
                         {
-                            Console.WriteLine($"Unrecognized switch {arg}");
-                            ShowHelp();
-                            return;
-                        }
-
-                        if (candidate == null)
-                        {
-                            candidate = arg;
+                            if (!ExtractValue(arg))
+                            {
+                                return;
+                            }
+                            recursive = true;
                         }
                         else
                         {
-                            arguments.Add(arg);
+                            if (candidate == null)
+                            {
+                                candidate = arg;
+                            }
+                            else
+                            {
+                                arguments.Add(arg);
+                            }
                         }
                         break;
 

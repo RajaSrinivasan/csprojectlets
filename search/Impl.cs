@@ -30,10 +30,68 @@ namespace search
 
         }
 
+        private void RecursiveSearch(string dirname, string fname)
+        {
+            if (mycli.verbose)
+            {
+                Console.WriteLine($"RecursiveSearch {dirname} fname={fname}");
+            }
+            FileAttributes attr = File.GetAttributes(dirname);
+            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+            {
+                string[] fileEntries = Directory.GetDirectories(dirname);
+                foreach (string fileName in fileEntries)
+                {
+                    if (mycli.verbose)
+                    {
+                        Console.WriteLine(fileName);
+                    }
+                    FileAttributes fattr = File.GetAttributes(fileName);
+                    if ((fattr & FileAttributes.Directory) == FileAttributes.Directory)
+                    {
+                        RecursiveSearch(fileName,fname);
+                    }
+                }
+
+                string[] simplefiles = Directory.GetFiles(dirname,fname);
+                foreach (string fileName in simplefiles)
+                {
+                    if (mycli.verbose)
+                    {
+                        Console.WriteLine(fileName);
+                    }
+                    FileAttributes fattr = File.GetAttributes(fileName);
+                    if ((fattr & FileAttributes.Directory) != FileAttributes.Directory)
+                    {
+                        Search(fileName);
+                    }
+                }
+
+            }
+            else
+            {
+                Console.WriteLine($"{dirname} is not a directory. No recursive search possible");
+            }
+        }
+
         private void Search(string filename)
         {
             int linenum = 0;
             int occurrences = 0;
+            if (mycli.verbose)
+            {
+                Console.WriteLine($"Searching {filename}");
+            }
+            FileAttributes attr = File.GetAttributes(filename);
+            if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+            {
+                if (mycli.verbose)
+                {
+                    Console.WriteLine($"{filename} is a diretory. skipping");
+                }
+                return;
+            }
+
             System.IO.StreamReader file = null;
             try
             {
@@ -103,7 +161,14 @@ namespace search
             }
             foreach (string f in mycli.Arguments)
             {
-                Search(f);
+                if (mycli.recursive)
+                {
+                    RecursiveSearch( mycli.toplevel , f);
+                }
+                else
+                {
+                    Search(f);
+                }
             }
         }
     }
