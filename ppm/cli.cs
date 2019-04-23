@@ -91,7 +91,7 @@ namespace ppm
                     case "-f":
                     case "--file":
                         argno++;
-                        if (args.Length <= argno)
+                        if (args.Length > argno)
                         {
                             Filename = args[argno];
                         }
