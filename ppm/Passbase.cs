@@ -152,11 +152,9 @@ namespace ppm
                     using (CryptoStream cs = new CryptoStream(ms, xfrm, CryptoStreamMode.Write))
                     {
                         BinaryWriter writer = new BinaryWriter(cs);
-                        writer.Write(ptblen); Console.WriteLine($"Wrote {ptblen.Length}");
-                        writer.Write(finalhash); Console.WriteLine($"Wrote {finalhash.Length}");
-                        writer.Write(ptb); Console.WriteLine($"Wrote {ptb.Length}");
-
-                        //Console.WriteLine($"Wrote {FileContents}");
+                        writer.Write(ptblen); 
+                        writer.Write(finalhash); 
+                        writer.Write(ptb);
                         writer.Close();
                         cs.Close();
                     }
@@ -202,7 +200,7 @@ namespace ppm
             DateTime today = DateTime.Today;
             CreationTime = today.ToString();
             FileContents = "# Creation Date " + CreationTime + " by Srini -------------------------------";
-
+            PlainText = Encoding.UTF8.GetBytes(FileContents);
             return Save();
         }
 
@@ -210,6 +208,7 @@ namespace ppm
         {
             if (Load())
             {
+                FileContents = Encoding.UTF8.GetString(PlainText);
                 Console.WriteLine(FileContents);
                 return true;
             }
