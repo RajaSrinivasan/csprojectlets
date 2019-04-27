@@ -25,9 +25,6 @@ namespace ppm
         private string CreationTime;
         private string FileContents;
 
-        private List<Membership> Memberships;
-
-
         public string Hex(byte[] bin)
         {
             StringBuilder sb = new StringBuilder();
@@ -72,36 +69,40 @@ namespace ppm
                 CryptoStream cs = new CryptoStream(ms, xfrm, CryptoStreamMode.Read);
                 BinaryReader reader = new BinaryReader(cs);
                 //Console.WriteLine($"Encrypted text length {EncryptedText.Length}");
-
-                byte[] ptblen = reader.ReadBytes(4);
-                //Console.WriteLine($"Length {ptblen[0]} {ptblen[1]} {ptblen[2]} {ptblen[3]} {ptblen.Length}");
-
-                byte[] ptsig = reader.ReadBytes(NormalizedPassword.Length);
-                //Console.WriteLine($"Signature length {ptsig.Length}");
-
-                byte[] paddedptb = reader.ReadBytes(EncryptedText.Length - 4 - NormalizedPassword.Length);
-                byte[] ptb = new byte[BitConverter.ToInt32(ptblen)];
-                Array.Copy(paddedptb, ptb,ptb.Length);
-                //Console.WriteLine($"Plain text {ptb.Length}");
-
-                SHA256 digest = SHA256.Create();
-                digest.TransformBlock(ptb, 0, BitConverter.ToInt32(ptblen) , ptb, 0);
-                digest.TransformFinalBlock(ptblen, 0, ptblen.Length);
-                byte[] finalhash = digest.Hash;
-
-                if (!finalhash.SequenceEqual(ptsig))
+                try
                 {
-                    Console.WriteLine("Hashes do not match");
-                }
-                //else
-                //{
-                //    Console.WriteLine("Hashes match");
-                //}
+                    byte[] ptblen = reader.ReadBytes(4);
+                    //Console.WriteLine($"Length {ptblen[0]} {ptblen[1]} {ptblen[2]} {ptblen[3]} {ptblen.Length}");
 
-                int plaintextlen = BitConverter.ToInt32(ptblen, 0);
-                PlainText = new byte[plaintextlen];
-                //Console.WriteLine($"Plaintext length {plaintextlen}");
-                Array.Copy(ptb, PlainText, plaintextlen);
+                    byte[] ptsig = reader.ReadBytes(NormalizedPassword.Length);
+                    //Console.WriteLine($"Signature length {ptsig.Length}");
+
+                    byte[] paddedptb = reader.ReadBytes(EncryptedText.Length - 4 - NormalizedPassword.Length);
+                    byte[] ptb = new byte[BitConverter.ToInt32(ptblen)];
+                    Array.Copy(paddedptb, ptb, ptb.Length);
+                    //Console.WriteLine($"Plain text {ptb.Length}");
+
+                    SHA256 digest = SHA256.Create();
+                    digest.TransformBlock(ptb, 0, BitConverter.ToInt32(ptblen), ptb, 0);
+                    digest.TransformFinalBlock(ptblen, 0, ptblen.Length);
+                    byte[] finalhash = digest.Hash;
+
+                    if (!finalhash.SequenceEqual(ptsig))
+                    {
+                        Console.WriteLine("Hashes do not match");
+                        return false;
+                    }
+
+                    int plaintextlen = BitConverter.ToInt32(ptblen, 0);
+                    PlainText = new byte[plaintextlen];
+                    //Console.WriteLine($"Plaintext length {plaintextlen}");
+                    Array.Copy(ptb, PlainText, plaintextlen);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Decryption failure.");
+                    return false;
+                }
             }
             return true;
         }
@@ -123,7 +124,7 @@ namespace ppm
             InitializationVector = br.ReadBytes(aes.IV.Length);
             FileInfo info = new System.IO.FileInfo(cli.Filename);
             EncryptedText = br.ReadBytes((int)info.Length);
-
+            br.Close();
             return Decrypt();
         }
 
@@ -204,6 +205,30 @@ namespace ppm
             return Save();
         }
 
+        public bool Add()
+        {
+            if (!File.Exists(cli.Filename))
+            {
+                Console.WriteLine($"{cli.Filename} does not exist. Cannot add new membership.");
+                return true;
+            }
+            if (!Load())
+            {
+                Console.WriteLine($"Load failure from {cli.Filename}");
+                return false;
+            }
+
+            DateTime today = DateTime.Today;
+            CreationTime = today.ToString();
+            FileContents = Encoding.UTF8.GetString(PlainText);
+            string memberpwd = cli.GetPassword("Password for the context " + cli.Context + ":" + cli.Username);
+            Membership member = new Membership(cli.Context, cli.Username, memberpwd);
+            FileContents = Membership.Add(FileContents, member);
+            FileContents = "\n# Added user on " + CreationTime + FileContents ;
+            PlainText = Encoding.UTF8.GetBytes(FileContents);
+            return Save();
+        }
+
         public bool List()
         {
             if (Load())
@@ -229,7 +254,7 @@ namespace ppm
 
         public Membership Lookup(string ctx, string uname)
         {
-            return new Membership();
+            return null;
         }
         public bool Add(string ctx, string uname)
         {

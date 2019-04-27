@@ -27,7 +27,15 @@ namespace ppm
                 case "list":
                     passbase.List();
                     break;
+                case "add":
+                    passbase.Add();
+                    if (cli.verbose)
+                    {
+                        passbase.List();
+                    }
+                    break;
                 case "test":
+
                     passbase.Test();
                     break;
                 default:
