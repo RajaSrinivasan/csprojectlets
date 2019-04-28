@@ -8,17 +8,20 @@ namespace ppm
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+
             Cli cli = new Cli(args);
-            string dbpassword = cli.GetPassword("Password:");
-            Console.WriteLine($"Password was {dbpassword}");
+
             Passbase passbase = new Passbase(cli);
-            passbase.SetPassword(dbpassword);
-            Console.WriteLine(passbase.Password);
-
-            string cmd = cli.Command("create,add,update,list,test");
-            Console.WriteLine($"Command {cmd}");
-
+            string cmd = cli.Command("create,add,update,show,list,test");
+            if (cmd.Length > 1)
+            {
+                string dbpassword = cli.GetPassword("Password:");
+                passbase.SetPassword(dbpassword);
+            }
+            else
+            {
+                return;
+            }
             switch (cmd)
             {
                 case "create":
@@ -34,8 +37,13 @@ namespace ppm
                         passbase.List();
                     }
                     break;
+                case "update":
+                    passbase.Update();
+                    break;
+                case "show":
+                    passbase.Show();
+                    break;
                 case "test":
-
                     passbase.Test();
                     break;
                 default:

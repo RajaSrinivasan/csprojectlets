@@ -18,7 +18,7 @@ namespace ppm
         }
         public string Update(string db)
         {
-            return db + context + ":" + username + ":" + password + "\n";
+            return db + context + ":" + username + ":" + password + ":\n";
         }
         public void Parse(string line)
         {
@@ -31,7 +31,15 @@ namespace ppm
         {
             Console.WriteLine($"Context={context} Username={username} Password={password}");
         }
+        public bool Matches(string ctx, string uname)
+        {
 
+            if (ctx.Equals(context) && uname.Equals(username))
+            {
+                return true;
+            }
+            return false;
+        }
         static public string All(Membership []members)
         {
             string db = "";
@@ -53,6 +61,10 @@ namespace ppm
         {
             return m.Update(db);
         }
+        public void SetPassword(string newp)
+        {
+            password = newp;
+        }
         static public Membership[] ParseDb(string db)
         {
             List<Membership> mlist = new List<Membership>();
@@ -61,9 +73,13 @@ namespace ppm
             {
                 if (!line.StartsWith("#"))
                 {
-                    Membership m = new Membership();
-                    m.Parse(line);
-                    mlist.Add(m);
+                    if (line.Length > 1)
+                    {
+                        Membership m = new Membership();
+                        // Console.WriteLine($"Parsing {line}");
+                        m.Parse(line);
+                        mlist.Add(m);
+                    }
                 }
             }
             return mlist.ToArray();
