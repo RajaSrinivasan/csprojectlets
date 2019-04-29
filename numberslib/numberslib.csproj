@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="numtest\bin\Debug\netcoreapp2.2\numberslib.pdb" />
+    <None Remove="numtest\bin\Debug\netcoreapp2.2\numberslib.dll" />
+    <None Remove="numtest\obj\numtest.csproj.nuget.g.props" />
+    <None Remove="numtest\obj\numtest.csproj.nuget.g.targets" />
+    <None Remove="numtest\obj\project.assets.json" />
+    <None Remove="numtest\obj\numtest.csproj.nuget.cache" />
+    <None Remove="numtest\obj\Debug\netcoreapp2.2\numtest.assets.cache" />
+    <None Remove="numtest\obj\Debug\netcoreapp2.2\numtest.csprojAssemblyReference.cache" />
+    <None Remove="numtest\obj\Debug\netcoreapp2.2\numtest.csproj.CoreCompileInputs.cache" />
+    <None Remove="numtest\obj\Debug\netcoreapp2.2\numtest.AssemblyInfoInputs.cache" />
+    <None Remove="numtest\obj\Debug\netcoreapp2.2\numtest.dll" />
+    <None Remove="numtest\obj\Debug\netcoreapp2.2\numtest.pdb" />
+    <None Remove="numtest\obj\Debug\netcoreapp2.2\numtest.csproj.CopyComplete" />
+    <None Remove="numtest\obj\Debug\netcoreapp2.2\numtest.csproj.FileListAbsolute.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="numtest\Program.cs" />
+    <Compile Remove="numtest\obj\Debug\netcoreapp2.2\numtest.AssemblyInfo.cs" />
+  </ItemGroup>
+</Project>

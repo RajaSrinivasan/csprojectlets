@@ -1,0 +1,4 @@
+/Users/rajasrinivasan/Prj/cs/numberslib/numtest/obj/Debug/netcoreapp2.2/numtest.csprojAssemblyReference.cache
+/Users/rajasrinivasan/Prj/cs/numberslib/numtest/obj/Debug/netcoreapp2.2/numtest.csproj.CoreCompileInputs.cache
+/Users/rajasrinivasan/Prj/cs/numberslib/numtest/obj/Debug/netcoreapp2.2/numtest.AssemblyInfoInputs.cache
+/Users/rajasrinivasan/Prj/cs/numberslib/numtest/obj/Debug/netcoreapp2.2/numtest.AssemblyInfo.cs
