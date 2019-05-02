@@ -7,7 +7,7 @@ namespace numtest
     {
         static void Tests(int num)
         {
-            Console.WriteLine($"No {num}\nDigitsOf");
+            Console.WriteLine($"No {num}-------------------------\nDigitsOf");
             int[] t1 = Core.DigitsOf(num);
             Core.Show(t1);
             int val = Core.ValueDigitsOf(t1);
@@ -22,6 +22,14 @@ namespace numtest
             Console.WriteLine($"Product of all those {prod}");
             bool prime = UnaryTests.IsPrime(num);
             Console.WriteLine($"IsPrime {prime}");
+            bool perfect = UnaryTests.IsPerfect(num);
+            Console.WriteLine($"IsPerfect {perfect}");
+            bool harshad = UnaryTests.IsHarshad(num);
+            Console.WriteLine($"IsHarshad {harshad}");
+            bool happy = UnaryTests.IsHappy(num);
+            Console.WriteLine($"IsHappy {happy}");
+            bool kaprekar = UnaryTests.IsKaprekar(num);
+            Console.WriteLine($"Iskaprekar {kaprekar}");
         }
         static void Main(string[] args)
         {
