@@ -205,6 +205,8 @@ namespace numberslib
             }
             return result;
         }
+
+        // Ref: https://www.wolframalpha.com/input/?i=kaprekar+number
         static public bool IsKaprekar(int num)
         {
             int numsq = num * num;
@@ -219,5 +221,30 @@ namespace numberslib
             return false;
         }
 
+    }
+    public class TwoaryAlgorithms
+    {
+        // Ref: https://en.wikipedia.org/wiki/Euclidean_algorithm
+        static public int Gcd(int a, int b)
+        {
+            if ((a == 0) || (b == 0)) return 0;
+            if (a > b)
+                return Gcd(b, a);
+            if (a == b)
+                return a;
+            int c = b % a;
+            if (c == 0)
+                return a;
+            return Gcd(c, a);
+        }
+
+        static public bool MutualPrime(int a, int b)
+        {
+            if (Gcd(a,b) == 1)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

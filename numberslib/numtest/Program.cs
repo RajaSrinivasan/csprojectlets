@@ -31,6 +31,23 @@ namespace numtest
             bool kaprekar = UnaryTests.IsKaprekar(num);
             Console.WriteLine($"Iskaprekar {kaprekar}");
         }
+        static void TwoaryTests(int num1, int num2)
+        {
+            Console.WriteLine($"Num1 {num1} Num2 {num2} -----------------");
+            int gcd = TwoaryAlgorithms.Gcd(num1, num2);
+            Console.WriteLine($"gcd {gcd}");
+            bool mprime = TwoaryAlgorithms.MutualPrime(num1, num2);
+            Console.WriteLine($"Mutually prime {mprime}");
+        }
+
+        static void SeriesTests(int num)
+        {
+            int[] fibs = Series.Fibonacci(num);
+            Core.Show(fibs);
+            GcdStruct[] gcds = Series.PairwiseGcd(fibs);
+            Series.ShowGcdStructs(gcds);
+        }
+
         static void Main(string[] args)
         {
             foreach (string arg in args)
@@ -38,8 +55,17 @@ namespace numtest
                 int argno;
                 argno = int.Parse(arg);
                 Tests(argno);
+                SeriesTests(argno);
             }
-
+            if ((args.Length % 2) == 0)
+            {
+                for (int i=0; i<args.Length-1; i+=2)
+                {
+                    int arg1 = int.Parse(args[i]);
+                    int arg2 = int.Parse(args[i+1]);
+                    TwoaryTests(arg1, arg2);
+                }
+            }
         }
     }
 }
