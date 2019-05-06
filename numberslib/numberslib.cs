@@ -105,7 +105,7 @@ namespace numberslib
                 case 2:
                     return num * num;
                 case 3:
-                    return num * Power(num, 2);
+                    return num * num * num;
                 case 4:
                     {
                         int sq = Power(num, 2);

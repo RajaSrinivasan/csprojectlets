@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using numberslib;
 
 namespace numtest
@@ -30,6 +31,12 @@ namespace numtest
             Console.WriteLine($"IsHappy {happy}");
             bool kaprekar = UnaryTests.IsKaprekar(num);
             Console.WriteLine($"Iskaprekar {kaprekar}");
+            Console.WriteLine("====================");
+            Dictionary<Int64, List<NumPair>> tcn = Series.GenerateTaxicabNumbers(3, num);
+            Series.Show(tcn);
+            Console.WriteLine("====================");
+            Dictionary<Int64, List<NumPair>> tcn1 = Series.GenerateTaxicabNumbers(4, num);
+            Series.Show(tcn1);
         }
         static void TwoaryTests(int num1, int num2)
         {
@@ -55,7 +62,7 @@ namespace numtest
                 int argno;
                 argno = int.Parse(arg);
                 Tests(argno);
-                SeriesTests(argno);
+                //SeriesTests(argno);
             }
             if ((args.Length % 2) == 0)
             {
