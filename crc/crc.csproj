@@ -11,4 +11,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="NuGet.CommandLine" Version="5.0.2" />
+    <PackageReference Include="CommandLineParser" Version="2.5.0" />
+  </ItemGroup>
 </Project>

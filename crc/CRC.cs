@@ -5,7 +5,8 @@ namespace crc
 {
     public class CRC
     {
-        private static ushort[] CRCtable = new ushort[256]
+        private ushort[] CRCtable;
+        private static ushort[] CRCtableDefault = new ushort[256]
         {
             0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
             0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
@@ -41,12 +42,12 @@ namespace crc
             0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040
         };
 
-        public static unsafe ushort Checksum(void *ptr, int blocklen)
+        public unsafe ushort Checksum(void *ptr, int blocklen)
         {
             return Update(0, ptr, blocklen);
         }
 
-        public static unsafe ushort Update(ushort crc, void *ptr, int blocklen)
+        public unsafe ushort Update(ushort crc, void *ptr, int blocklen)
         {
             ushort ubCrclo;
             ushort uwCrc = crc ;
@@ -66,7 +67,7 @@ namespace crc
             return (uwCrc);
         }
 
-        public static ushort Checksum(string filename)
+        public ushort Checksum(string filename)
         {
             ushort filechecksum = 0;
             System.IO.BinaryReader file = null;
@@ -101,8 +102,27 @@ namespace crc
             return filechecksum;
         }
 
-        public static void Generate(ushort poly)
+        public void ShowTable()
         {
+            int words_per_line = 8;
+            int lines = 256 / words_per_line;
+            int wordidx = 0;
+            for (int line=0; line<lines; line++)
+            {
+                string linenostr = line.ToString("D4");
+                Console.Write($" {linenostr} : ");
+                for (int word=0; word<words_per_line; word++, wordidx++ )
+                {
+                    string wordstr = CRCtable[wordidx].ToString("x4");
+                    Console.Write($" {wordstr}");
+                }
+                Console.WriteLine();
+            }
+
+        }
+        public void Generate(ushort poly)
+        {
+            ushort[] table = new ushort[256];
             byte b = 0;
             ushort reg;
             ushort augumented;
@@ -110,13 +130,11 @@ namespace crc
             {
                 augumented = (ushort)(b * 0x0100) ;
                 string augstr = augumented.ToString("x4");
-                //Console.Write($"{augstr} : ");
                 reg = 0;
                 bool applyxor;
                 for (int i=0; i<24; i++)
                 {
-                    //augstr = augumented.ToString("x4");
-                    //Console.Write($"{augstr} ");
+
                     if ((reg & 0x8000) == 0) applyxor = false;
                     else applyxor = true ;
 
@@ -131,19 +149,20 @@ namespace crc
                     }
                     augumented *= 2;
                     if (applyxor) reg ^= poly;
-                    //string regstr = reg.ToString("x4");
-                    //Console.WriteLine($"{regstr}");
+
                 }
+                table[b] = reg;
                 string hexreg = reg.ToString("X4");
                 Console.WriteLine($"{b}    : {hexreg}");
                 if (b == 0xff) break;
-                //if (b > 9) break;
                 b++;
             }
+            CRCtable = table;
         }
 
         public CRC()
         {
+            CRCtable = CRC.CRCtableDefault;
         }
 
     }
