@@ -32,7 +32,7 @@ namespace crc
             [Option('n', "noise", Required = false, HelpText = "Add noise to the arg. Value is number of bits in error")]
             public int Noise { get; set; }
 
-            [Option('p', "polynomial", Required = false, HelpText = "The polynomial for the CRC")]
+            [Option('p', "polynomial", Required = false, HelpText = "The polynomial for the CRC. use hex numbers e.g. 0xabab")]
             public string Polynomial { get; set; }
 
             [Value(0, MetaName = "Argument", HelpText = "Argument.")]
@@ -43,18 +43,10 @@ namespace crc
 
         public Cli(string[] args)
         {
-
             Parser.Default.ParseArguments<Options>(args)
                .WithParsed<Options>(o =>
                {
-                   if (o.Verbose)
-                       Console.WriteLine("Verbose output enabled.");
-                   Console.WriteLine($"Noise = {o.Noise}");
-                   Console.WriteLine($"Argument = {o.Argument}");
-                   Console.WriteLine($"Polynomial = {o.Polynomial}");
-
                    opt = o;
-                   Console.WriteLine($"{opt.Table}");
                });
 
         }

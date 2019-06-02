@@ -152,8 +152,7 @@ namespace crc
 
                 }
                 table[b] = reg;
-                string hexreg = reg.ToString("X4");
-                Console.WriteLine($"{b}    : {hexreg}");
+
                 if (b == 0xff) break;
                 b++;
             }
