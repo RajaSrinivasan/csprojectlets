@@ -47,7 +47,36 @@ namespace crc
             }
             else if (cli.opt.HexString)
             {
-
+                if (cli.opt.Argument.Length % 2 != 0)
+                {
+                    Console.WriteLine("Argument length is odd. Not a valid hex string");
+                    return;
+                }
+                byte[] bytarg = new byte[cli.opt.Argument.Length / 2];
+                for (int idx = 0; idx < bytarg.Length; idx++)
+                {
+                    string hexdig = cli.opt.Argument.Substring(idx * 2, 2);
+                    try
+                    {
+                        byte b = Convert.ToByte(hexdig,16);
+                        bytarg[idx] = b;
+                    }
+                    catch
+                    {
+                        Console.WriteLine($"Bad hex digit {hexdig}");
+                        return;
+                    }
+                    
+                }
+                unsafe
+                {
+                    fixed (void* dptr = &bytarg[0])
+                    {
+                        ushort strcrc = crc.Checksum(dptr, bytarg.Length);
+                        string strcrchex = strcrc.ToString("x4");
+                        Console.WriteLine($"{strcrchex}");
+                    }
+                }
             }
             else
             {
