@@ -67,7 +67,57 @@ namespace crc
             return (uwCrc);
         }
 
-        public ushort Checksum(string filename)
+        public ushort Checksum(string arg)
+        {
+            if (arg.Length == 0) return 0;
+            unsafe
+            {
+                byte[] bytarg = System.Text.Encoding.ASCII.GetBytes(arg);
+
+                fixed (void* dptr = &bytarg[0])
+                {
+                    ushort strcrc = Checksum(dptr, bytarg.Length);
+                    return strcrc;
+                }
+            }
+
+        }
+
+        public ushort HexStringChecksum(string hexstr)
+        {
+            if (hexstr.Length == 0) return 0;
+            if (hexstr.Length % 2 != 0)
+            {
+                Console.WriteLine("Argument length is odd. Not a valid hex string");
+                return 0;
+            }
+            byte[] bytarg = new byte[hexstr.Length / 2];
+            for (int idx = 0; idx < bytarg.Length; idx++)
+            {
+                string hexdig = hexstr.Substring(idx * 2, 2);
+                try
+                {
+                    byte b = Convert.ToByte(hexdig, 16);
+                    bytarg[idx] = b;
+                }
+                catch
+                {
+                    Console.WriteLine($"Bad hex digit {hexdig}");
+                    return 0;
+                }
+
+            }
+            unsafe
+            {
+                fixed (void* dptr = &bytarg[0])
+                {
+                    ushort hexstrcrc = Checksum(dptr, bytarg.Length);
+                    return hexstrcrc;
+                }
+            }
+        }
+
+        public ushort FileChecksum(string filename)
         {
             ushort filechecksum = 0;
             System.IO.BinaryReader file = null;
