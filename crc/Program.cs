@@ -67,8 +67,35 @@ namespace crc
 
         static void Main(string[] args)
         {
-            Cli cli = new Cli(args);
-            CRC crc = new CRC();
+            Cli cli;
+            try
+            {
+                cli = new Cli(args);
+            }
+            catch
+            {
+                Console.WriteLine("Command Line error");
+                return;
+            }
+
+            if (cli.opt == null)
+            {
+                return;
+            }
+
+            CRC crc;
+            if (cli.opt.Noise > 0)
+            {
+                crc = new NoiseCRC(cli.opt.Noise) ;
+                if (cli.opt.Verbose)
+                {
+                    Console.WriteLine($"Enabling noise level {cli.opt.Noise}");
+                }
+            }
+            else
+            {
+                crc = new CRC();
+            }
 
             if ((cli.opt.Polynomial != null) && (cli.opt.Polynomial.Length > 0))
             {

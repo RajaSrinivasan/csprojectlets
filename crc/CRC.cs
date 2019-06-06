@@ -42,7 +42,7 @@ namespace crc
             0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040
         };
 
-        public unsafe ushort Checksum(void *ptr, int blocklen)
+        virtual public unsafe ushort Checksum(void *ptr, int blocklen)
         {
             return Update(0, ptr, blocklen);
         }
@@ -214,5 +214,41 @@ namespace crc
             CRCtable = CRC.CRCtableDefault;
         }
 
+    }
+
+    public class NoiseCRC : CRC
+    {
+        public int NoiseLevel = 0;
+        Random ByteNumGenerator;
+        Random BitNumGenerator;
+        public NoiseCRC(int level)
+        {
+            NoiseLevel = level;
+            ByteNumGenerator = new Random(7);
+            BitNumGenerator = new Random(11);
+        }
+        public override unsafe ushort Checksum(void* ptr, int blocklen)
+        {
+            byte[] noisyblock = new byte[blocklen];
+            byte* src = (byte*)ptr;
+            for (int i = 0; i < blocklen ; i++)
+            {
+                noisyblock[i] = src[i];
+            }
+
+            for (int nl=0; nl < NoiseLevel; nl++)
+            {
+                int bindex = ByteNumGenerator.Next(blocklen);
+                int bitnum = BitNumGenerator.Next(8);
+                byte mask = (byte)(1 << bitnum) ;
+                string maskstr = mask.ToString("x2");
+                Console.WriteLine($"Adding noise to byte {bindex} with mask 0x{maskstr}");
+                noisyblock[bindex] = (byte)(noisyblock[bindex] ^ mask);
+            }
+            fixed (void* dptr = &noisyblock[0])
+            {
+                return Update(0, dptr, blocklen);
+            }
+        }
     }
 }

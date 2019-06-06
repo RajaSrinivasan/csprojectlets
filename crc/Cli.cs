@@ -43,12 +43,19 @@ namespace crc
 
         public Cli(string[] args)
         {
-            Parser.Default.ParseArguments<Options>(args)
-               .WithParsed<Options>(o =>
-               {
-                   opt = o;
-               });
-
+            try
+            {
+                Parser.Default.ParseArguments<Options>(args)
+                   .WithParsed<Options>(o =>
+                   {
+                       opt = o;
+                   });
+            }
+            catch (Exception e)
+            {
+                Console.Write("Command Line error");
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }
