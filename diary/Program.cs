@@ -37,6 +37,7 @@ namespace diary
             longsprint.Show();
 
             Diary diary = new Diary();
+            diary.Save("mydiary.dia");
             
         }
     }
