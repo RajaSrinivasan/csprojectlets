@@ -34,6 +34,8 @@ namespace diary
         public void Report()
         {
             Console.WriteLine("Report generation");
+            diary = Diary.Load(Cli.filename);
+            diary.Report();
         }
     }
 }

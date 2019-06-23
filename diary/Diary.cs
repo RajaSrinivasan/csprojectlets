@@ -23,13 +23,35 @@ namespace diary
             active = Calendar.Create(duration);
             created = DateTime.Now ;
         }
+        private static string Fullname( string filename)
+        {
+            string[] fields = filename.Split(Path.DirectorySeparatorChar);
+            string homedir;
+            string fullname = filename;
+            if (fields.Length > 1)
+            {
+                if (fields[0] == "~")
+                {
+                    homedir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    fields[0] = homedir;
+                    fullname = Path.Combine(fields);
+                    Console.WriteLine($"Formed fullname {fullname}");
+                }
+            }
+
+            FileInfo fi = new FileInfo(fullname);
+            Console.WriteLine($"In the directory {fi.DirectoryName}");
+            Directory.CreateDirectory(fi.DirectoryName);
+            return fullname;
+        }
 
         public void Save(string filename)
         {
+            string fullname = Fullname(filename);
             System.IO.StreamWriter file = null;
             try
             {
-                file = new System.IO.StreamWriter(filename);
+                file = new System.IO.StreamWriter(fullname);
             }
             catch (IOException e)
             {
@@ -45,10 +67,11 @@ namespace diary
 
         public static Diary Load(string filename)
         {
+            string fullname = Fullname(filename);
             System.IO.StreamReader file = null;
             try
             {
-                file = new System.IO.StreamReader(filename);
+                file = new System.IO.StreamReader(fullname);
             }
             catch (IOException e)
             {
@@ -80,20 +103,7 @@ namespace diary
         //
         public static Diary Create(string filename,int sprdur)
         {
-            
-            string[] fields = filename.Split(Path.DirectorySeparatorChar);
-            string homedir;
-            string fullname = filename;
-            if (fields.Length > 1)
-            {
-                if (fields[0] == "~")
-                {
-                    homedir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                    fields[0] = homedir;
-                    fullname = Path.Combine(fields);
-                    Console.WriteLine($"Formed fullname {fullname}");
-                }
-            }
+            string fullname = Fullname(filename);
 
             if (File.Exists(fullname))
             {
@@ -101,16 +111,32 @@ namespace diary
                 return null;
             }
 
-            FileInfo fi = new FileInfo(fullname);
-            Console.WriteLine($"In the directory {fi.DirectoryName}");
-            Directory.CreateDirectory(fi.DirectoryName);
-
             Diary temp = new Diary();
             temp.duration = sprdur;
             Console.WriteLine($"Creating empty diary {fullname} duration {sprdur}");
             temp.Save(fullname);
+
             return temp;
         }
 
+        public void Report()
+        {
+            string cr = created.ToString();
+            Console.WriteLine($"Created : {cr}");
+            Console.WriteLine($"Sprint Duration : {duration}");
+            Console.WriteLine("Current Sprint:");
+            active.Report();
+            if (sprints.Count == 0)
+            {
+                Console.WriteLine("No previous sprints");
+            }
+            else
+            {
+                foreach (Sprint spr in sprints)
+                {
+                    spr.Report();
+                }
+            }
+        }
     }
 }
