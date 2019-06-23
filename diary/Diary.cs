@@ -8,17 +8,20 @@ namespace diary
 {
     public class Diary
     {
-        public int duration { get; set; }
+        public DateTime created;
+        public int duration { get; set; }            // Duration in weeks
+        public List<Sprint> sprints;                 // Previous closed sprints
+        public Sprint active;                        // Currently active sprint
 
-        public List<Sprint> sprints;
-
+        // Default Constructor
+        //    No previous sprints
+        //    Create a current sprint
         public Diary()
         {
             duration = 1;                        // Default duration is 1 week
             sprints = new List<Sprint>();        // Create an empty list of sprints
-            Sprint current; // Create a dummy current sprint
-            current = Calendar.Create(duration);
-            sprints.Add(current);
+            active = Calendar.Create(duration);
+            created = DateTime.Now ;
         }
 
         public void Save(string filename)
@@ -70,9 +73,42 @@ namespace diary
             return JsonConvert.SerializeObject(this);
         }
 
-        public static Diary Create(string jsonstring)
+        // Create a diary file by
+        //    - creating an empty diary
+        //    - save it to the file
+        //    filename - is the diary filename 
+        //
+        public static Diary Create(string filename,int sprdur)
         {
-            Diary temp = JsonConvert.DeserializeObject<Diary>(jsonstring);
+            
+            string[] fields = filename.Split(Path.DirectorySeparatorChar);
+            string homedir;
+            string fullname = filename;
+            if (fields.Length > 1)
+            {
+                if (fields[0] == "~")
+                {
+                    homedir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    fields[0] = homedir;
+                    fullname = Path.Combine(fields);
+                    Console.WriteLine($"Formed fullname {fullname}");
+                }
+            }
+
+            if (File.Exists(fullname))
+            {
+                Console.WriteLine($"File {fullname} already exists. Not creating.");
+                return null;
+            }
+
+            FileInfo fi = new FileInfo(fullname);
+            Console.WriteLine($"In the directory {fi.DirectoryName}");
+            Directory.CreateDirectory(fi.DirectoryName);
+
+            Diary temp = new Diary();
+            temp.duration = sprdur;
+            Console.WriteLine($"Creating empty diary {fullname} duration {sprdur}");
+            temp.Save(fullname);
             return temp;
         }
 

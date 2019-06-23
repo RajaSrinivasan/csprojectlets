@@ -4,7 +4,7 @@ namespace diary
 {
     class Program
     {
-        static void Main(string[] args)
+        static void OldMain(string[] args)
         {
             Console.WriteLine("Hello World!");
             Todo todo = new Todo();
@@ -38,7 +38,14 @@ namespace diary
 
             Diary diary = new Diary();
             diary.Save("mydiary.dia");
-            
+
+            Cli cli = new Cli(args);
+        }
+        static void Main(string[] args)
+        {
+            Cli cli = new Cli(args);
+            Impl impl = new Impl(cli);
+            impl.Execute();
         }
     }
 }
