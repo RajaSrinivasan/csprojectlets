@@ -12,7 +12,7 @@ namespace diary
         }
     }
 
-    public class Sprint
+    public class Sprint : IComparable<Sprint>
     {
         public List<Todo> todos;
 
@@ -20,6 +20,10 @@ namespace diary
         public DateTime end { get; set; }
         public string id { get; set; }
 
+        public int CompareTo(Sprint other)
+        {
+            return string.Compare(this.id, other.id);
+        }
         public Sprint()
         {
             todos = new List<Todo>();
@@ -58,6 +62,15 @@ namespace diary
 
         public void Report()
         {
+            DateTime now = DateTime.Now;
+            if (now > end)
+            {
+                Console.WriteLine("State: Expired. Should be closed");
+            }
+            else
+            {
+                Console.WriteLine("State: Active");
+            }
             Console.WriteLine($"Sprint ID : {id}");
             Console.WriteLine($"Starting {start.ToString()} Ending: {end.ToString()}");
             Console.WriteLine($"Tasks {todos.Count}");

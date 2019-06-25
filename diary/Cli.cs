@@ -11,7 +11,7 @@ namespace diary
         private string[] Operands { get; set; }
 
         public string command ;
-        private const string DEFAULT_DIARY_FILENAME = "~/.diary/diary.dia" ;        // in the home dir
+        public const string DEFAULT_DIARY_FILENAME = "~/.diary/diary.dia" ;        // in the home dir
         [Argument('f', "filename", "diary file name. default " + DEFAULT_DIARY_FILENAME)]
         public static string filename { get; set; } = DEFAULT_DIARY_FILENAME;
 

@@ -8,6 +8,7 @@ namespace diary
 {
     public class Diary
     {
+        public static int DEFAULT_DURATION = 1;
         public DateTime created;
         public int duration { get; set; }            // Duration in weeks
         public List<Sprint> sprints;                 // Previous closed sprints
@@ -16,12 +17,13 @@ namespace diary
         // Default Constructor
         //    No previous sprints
         //    Create a current sprint
-        public Diary()
+        private Diary()
         {
-            duration = 1;                        // Default duration is 1 week
-            sprints = new List<Sprint>();        // Create an empty list of sprints
-            active = Calendar.Create(duration);
-            created = DateTime.Now ;
+        }
+
+        private void AssignID(Sprint spr)
+        {
+            spr.id = "SPRINT_" + sprints.Count.ToString("D");
         }
         private static string Fullname( string filename)
         {
@@ -62,6 +64,9 @@ namespace diary
             string js = Json();
             file.WriteLine(js);
             file.Close();
+
+            Console.WriteLine($"Created {filename}");
+            Console.WriteLine(js);
 
         }
 
@@ -112,7 +117,15 @@ namespace diary
             }
 
             Diary temp = new Diary();
-            temp.duration = sprdur;
+            if (sprdur != 0) temp.duration = sprdur; // Default duration is 1 week
+            else temp.duration = Diary.DEFAULT_DURATION;
+
+            temp.sprints = new List<Sprint>();       // Create an empty list of sprints
+            
+            temp.active = Calendar.Create(temp.duration);
+            temp.AssignID(temp.active);
+            temp.created = DateTime.Now;
+
             Console.WriteLine($"Creating empty diary {fullname} duration {sprdur}");
             temp.Save(fullname);
 
@@ -126,6 +139,8 @@ namespace diary
             Console.WriteLine($"Sprint Duration : {duration}");
             Console.WriteLine("Current Sprint:");
             active.Report();
+
+
             if (sprints.Count == 0)
             {
                 Console.WriteLine("No previous sprints");
@@ -137,6 +152,25 @@ namespace diary
                     spr.Report();
                 }
             }
+        }
+
+        public void CloseSprint()
+        {
+            DateTime now = DateTime.Now;
+            if (now < active.end)
+            {
+                Console.WriteLine("Warning: Sprint expiry date is away. Closing");
+            }
+            if (sprints == null)
+            {
+                Console.WriteLine("No previous sprints. Creating a list");
+                sprints = new List<Sprint>();
+            }
+            Sprint newactive = new Sprint();
+            newactive = active;
+            sprints.Add(active);
+            active = Calendar.Create(duration);
+            AssignID(active);
         }
     }
 }
