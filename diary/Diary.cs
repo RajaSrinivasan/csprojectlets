@@ -98,7 +98,7 @@ namespace diary
         public string Json()
         {
             sprints.Sort();
-            return JsonConvert.SerializeObject(this);
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
 
         // Create a diary file by
