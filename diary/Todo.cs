@@ -20,10 +20,11 @@ namespace diary
         public string description;
         public string blockage;
         public int effort_estimate { get; set; }
-        public int effort_actual { get; set; }
+        public string project { get; set; }
 
         public Todo()
         {
+            status = StatusType.ToStart;
         }
 
         public void Show()
@@ -33,6 +34,13 @@ namespace diary
             Console.WriteLine(json);
         }
 
+        public void Report()
+        {
+            Console.WriteLine($"Todo: {id} Project: {project} Effort: {effort_estimate} Description: {description}");
+            Console.WriteLine($"Status: {status}");
+            Console.WriteLine($"Blockage: {blockage}");
+            Console.WriteLine();
+        }
         public string Json()
         {
             return JsonConvert.SerializeObject(this);

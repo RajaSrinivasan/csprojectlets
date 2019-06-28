@@ -23,7 +23,7 @@ namespace diary
 
         private void AssignID(Sprint spr)
         {
-            spr.id = "SPRINT_" + sprints.Count.ToString("D");
+            spr.id = "S" + sprints.Count.ToString("D");
         }
         private static string Fullname( string filename)
         {
@@ -37,12 +37,12 @@ namespace diary
                     homedir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                     fields[0] = homedir;
                     fullname = Path.Combine(fields);
-                    Console.WriteLine($"Formed fullname {fullname}");
+                    //Console.WriteLine($"Formed fullname {fullname}");
                 }
             }
 
             FileInfo fi = new FileInfo(fullname);
-            Console.WriteLine($"In the directory {fi.DirectoryName}");
+            //Console.WriteLine($"In the directory {fi.DirectoryName}");
             Directory.CreateDirectory(fi.DirectoryName);
             return fullname;
         }
@@ -65,8 +65,8 @@ namespace diary
             file.WriteLine(js);
             file.Close();
 
-            Console.WriteLine($"Created {filename}");
-            Console.WriteLine(js);
+            //Console.WriteLine($"Created {filename}");
+            //Console.WriteLine(js);
 
         }
 
@@ -132,24 +132,29 @@ namespace diary
             return temp;
         }
 
-        public void Report()
+        public void Report(bool all)
         {
             string cr = created.ToString();
+            Console.WriteLine("---------------------------------------------------------");
             Console.WriteLine($"Created : {cr}");
             Console.WriteLine($"Sprint Duration : {duration}");
+            Console.WriteLine("---------------------------------------------------------");
             Console.WriteLine("Current Sprint:");
             active.Report();
+            Console.WriteLine("---------------------------------------------------------");
 
-
-            if (sprints.Count == 0)
+            if (all)
             {
-                Console.WriteLine("No previous sprints");
-            }
-            else
-            {
-                foreach (Sprint spr in sprints)
+                if (sprints.Count == 0)
                 {
-                    spr.Report();
+                    Console.WriteLine("No previous sprints");
+                }
+                else
+                {
+                    foreach (Sprint spr in sprints)
+                    {
+                        spr.Report();
+                    }
                 }
             }
         }
@@ -157,6 +162,7 @@ namespace diary
         public void CloseSprint()
         {
             DateTime now = DateTime.Now;
+            active.status = Sprint.StatusType.CLOSED;
             if (now < active.end)
             {
                 Console.WriteLine("Warning: Sprint expiry date is away. Closing");
@@ -166,11 +172,12 @@ namespace diary
                 Console.WriteLine("No previous sprints. Creating a list");
                 sprints = new List<Sprint>();
             }
-            Sprint newactive = new Sprint();
-            newactive = active;
+
             sprints.Add(active);
             active = Calendar.Create(duration);
             AssignID(active);
         }
+
+       
     }
 }

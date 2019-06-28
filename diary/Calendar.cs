@@ -15,12 +15,12 @@ namespace diary
             {
                 if (now.DayOfWeek == DayOfWeek.Sunday)
                 {
-                    Console.WriteLine("Found a sunday");   
+                    //Console.WriteLine("Found a sunday");   
                     return now.Date;
                 }
                 else
                 {
-                    Console.WriteLine($"Searching for sunday. now {now}");
+                   // Console.WriteLine($"Searching for sunday. now {now}");
                 }
                 now = now.AddDays(-1.0);
             }
@@ -41,6 +41,7 @@ namespace diary
             Sprint sprint = new Sprint();
             sprint.start = BeginDate();
             sprint.end = EndDate(sprint.start,weeks);
+            sprint.status = Sprint.StatusType.OPEN;
             return sprint;
         }
     }
