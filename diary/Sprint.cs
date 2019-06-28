@@ -44,8 +44,8 @@ namespace diary
         {
             AssignID(todo);
             todos.Add(todo);
-            Console.WriteLine("Adding");
-            todo.Show();
+            //Console.WriteLine("Adding");
+            //todo.Show();
         }
 
         public void Show()

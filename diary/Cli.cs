@@ -36,15 +36,41 @@ namespace diary
                                                 "close" ,    // close the current sprint and create a new one
 
                                                 "todo" ,     // create a new task
-                                                "remove" ,   // remove a task
                                                 "done" ,     // mark a task done
                                                 "blocked"    // mark a task as blocked
 
                                             };
         private int lastswitch = -1;
         private List<string> operands = new List<string>();
+        private void SwitchHelp(string sh, string lo, string desc)
+        {
+            Console.WriteLine($"-{sh} \t --{lo} \t {desc}");
+        }
+        private void CommandHelp(string cmd, string desc)
+        {
+            Console.WriteLine($"{cmd} \t {desc}");
+        }
         private void Help()
         {
+            Console.WriteLine("Diary Utility. Version 00.01");
+            Console.WriteLine("\nDiary level commands");
+            CommandHelp("create", "create a new diary");
+            CommandHelp("modify", "parameters of a diary e.g. sprint duration");
+            CommandHelp("report", "report the diary");
+
+            Console.WriteLine("\nSprint level commands");
+            CommandHelp("todo", "add a new task to the current sprint. argument: <description of task>");
+            CommandHelp("done", "mark a task done");
+            CommandHelp("blocked", "mark a task blocked. argument: <blockage reason>");
+
+            SwitchHelp("h", "help", "show help");
+            SwitchHelp("v", "verbose", "verbose");
+
+            SwitchHelp("f", "filename", "Diary filename. Default: " + Cli.DEFAULT_DIARY_FILENAME);
+            SwitchHelp("d", "duration", "Sprint duration. Default: 1");
+            SwitchHelp("e", "estimate", "Estimated effort for task creation. Default 1. Units = arbitrary");
+            SwitchHelp("t", "task", "Id of the task for close/done/blocked");
+            SwitchHelp("a", "all", "Report all sprints. Default: only the current sprint");
 
         }
         public string[] Operands()
@@ -88,6 +114,16 @@ namespace diary
                     case "-v":
                     case "--verbose":
                         verbose = true;
+                        lastswitch = arg;
+                        break;
+
+                    case "-f":
+                    case "--filename":
+                        if (arg+1 < args.Length)
+                        {
+                            filename = args[arg + 1];
+                            arg++;
+                        }
                         lastswitch = arg;
                         break;
 

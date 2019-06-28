@@ -32,7 +32,7 @@ namespace diary
             temp = temp.AddDays((double)weeks * 7.0);
             temp = temp.AddSeconds(-1.0);
 
-            Console.WriteLine($"Beginning {beg} Weeks {weeks} End {temp}");
+            //Console.WriteLine($"Beginning {beg} Weeks {weeks} End {temp}");
             return temp;
 
         }
