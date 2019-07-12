@@ -1,4 +1,17 @@
-﻿using System;
+﻿// Copyright © 2019 TOPR llc.
+
+// Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is 
+// hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+
+// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE
+// INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS.IN NO EVENT SHALL THE AUTHOR BE LIABLE
+// FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+// LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+// ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+// All questions may please be addressed to contact@toprllc.com
+
+using System;
 using System.Collections.Generic;
 namespace CommandLine
 {
@@ -16,7 +29,6 @@ namespace CommandLine
         }
 
         public List<Subcommand> subcommands = new List<Subcommand>();
-
 
         public struct Switch
         {
@@ -40,7 +52,7 @@ namespace CommandLine
 
             public Switch(string sf, string lf, string desc, string opt, string d)
             {
-                shortform = sf;
+                shortform =  sf;
                 longform = lf;
                 description = desc;
                 if (opt == null)
@@ -49,11 +61,11 @@ namespace CommandLine
                 }
                 else
                 { 
-                    if (opt.Equals("=") || opt.Equals(":"))
+                    if (opt.Equals("?") || opt.Equals(":"))
                         argopts = opt;
                     else
                     {
-                        Console.WriteLine("Unrecognized option : {0,0} for switch {0,1}", opt , sf);
+                        Console.WriteLine("Unrecognized option : {0,0} for switch {1,0}", opt , sf);
                         argopts = null;
                     }
                 }
@@ -71,6 +83,8 @@ namespace CommandLine
         private int lastswitch = -1;
         private List<string> operands = new List<string>();
 
+        public string usage_text { get; set; }
+
         public Cli()
         {
             AddSwitch("h", "help", "showhelp", null , "false" );
@@ -82,6 +96,10 @@ namespace CommandLine
             if (version != null)
             {
                 Console.WriteLine($"{version.name} - Version {version.major}.{version.minor}-{version.build}");
+            }
+            if (usage_text != null)
+            {
+                Console.WriteLine(usage_text);
             }
             if (subcommands.Count > 1)
             {
@@ -100,8 +118,8 @@ namespace CommandLine
             Console.WriteLine("Description");
             foreach (Switch sw in switches)
             {
-                Console.Write("-{0,-8}", sw.shortform);
-                Console.Write("--{0,-16}", sw.longform);
+                Console.Write("{0,-8}", sw.shortform);
+                Console.Write("{0,-16}", sw.longform);
                 Console.Write("{0,-8}", sw.argopts);
                 Console.Write("{0,-16}", sw.def);
                 Console.WriteLine(sw.description);
@@ -116,13 +134,26 @@ namespace CommandLine
         //          -2 - valid switch but missing required parameter
         private int ProcessSwitch(string[] args, int idx)
         {
+            //Console.WriteLine("Processing switch {0,1}", args[idx]);
+            string thissw = args[idx];
+            if (args[idx].Substring(0, 2).Equals("--"))
+            {
+                thissw = args[idx].Substring(2);
+                //Console.WriteLine("Long Form {0,1}", thissw);
+            }
+            else if (args[idx].Substring(0, 1).Equals("-"))
+            {
+                thissw = args[idx].Substring(1);
+                //Console.WriteLine("Short Form {0,1}", thissw);
+            }
             foreach (Switch sw in switches)
             {
-                if (sw.shortform.Equals(args[idx]) || sw.longform.Equals(args[idx]))
+                if (sw.shortform.Equals(thissw) || sw.longform.Equals(thissw))
                 {
                     if (sw.argopts == null)
                     {
-                        used_switches[args[idx]] = sw.def;
+                        used_switches[thissw] = sw.def;
+                        return 0;
                     }
                     else
                     {
@@ -139,23 +170,26 @@ namespace CommandLine
                                     Console.WriteLine("Switch {0,0} requires a paramater", sw.shortform);
                                     return -2 ;
                                 }
-                                used_switches[args[idx]] = args[idx + 1];
+                                used_switches[thissw] = args[idx + 1];
                                 idx++;
                                 return 1;
     
-                            case "=":
-                                if (idx > args.Length - 1)
+                            case "?":
+                                if (idx >= args.Length - 1)
                                 {
-                                    used_switches[args[idx]] = sw.def;
+                                    used_switches[thissw] = sw.def;
+                                    //Console.WriteLine("Using default {0,1}", sw.def);
+                                    return 0 ;
+                                }
 
-                                    return 0 ;
-                                }
-                                if (args[idx + 1][0].Equals("-"))
+                                if (args[idx + 1].Substring(0,1).Equals("-"))
                                 {
-                                    used_switches[args[idx]] = sw.def;
+                                    used_switches[thissw] = sw.def;
+                                    //Console.WriteLine("Next arg is a switch. Using default {0,1}", sw.def);
                                     return 0 ;
                                 }
-                                used_switches[args[idx]] = args[idx + 1];
+                                used_switches[thissw] = args[idx + 1];
+                                //Console.WriteLine("Setting value {0,1}", args[idx + 1]);
                                 idx++;
                                 return 1 ;
                             default:
@@ -180,34 +214,34 @@ namespace CommandLine
                 Help();
                 return false;
             }
+
             int nextarg = 0;
             if (subcommands.Count > 0)
             {
                 Subcommand []scs = subcommands.ToArray();
-                bool foundsubcmd = false;
+                // bool foundsubcmd = false;
                 foreach (Subcommand sc in scs)
                 {
                     if (sc.subcmd.Equals( args[0]))
                     {
                         subcommand = args[0];
                         nextarg++;
-                        foundsubcmd = true;
+                        // foundsubcmd = true;
                         break;
                     }
                 }
-                if (!foundsubcmd)
-                {
-                    Console.WriteLine("Did not find a valid subcommand.");
-                    return false;
-                }
-
             }
+            
+            //Console.WriteLine("Found a subcommand {0,1}", subcommand);
             int cont = 0;
             while ((cont >= 0) && nextarg < args.Length )
             {
-                if (args[nextarg][0].Equals("-"))
+                string issw = args[nextarg];
+                //Console.WriteLine("Trying {0,1}", issw);
+                if (issw.Substring(0,1).Equals("-"))
                 {
                     // found a switch argument.
+                    //Console.WriteLine("Found a switch");
                     lastswitch = nextarg;
                     cont = ProcessSwitch(args, nextarg);
                     if (cont == 1)
@@ -220,6 +254,7 @@ namespace CommandLine
                 }
                 else
                 {
+                    //Console.WriteLine("Arg is not a switch {0,1}", args[nextarg]);
                     for (int oarg=nextarg; oarg < args.Length; oarg++)
                     {
                         operands.Add(args[oarg]);
@@ -252,6 +287,7 @@ namespace CommandLine
             {
                 return true;
             }
+            //Console.WriteLine("Switch {0,1} was not present int the commandline",sw);
             return false;
         }
 
@@ -287,6 +323,7 @@ namespace CommandLine
         public string GetString(string sw)
         {
             string value;
+
             if (used_switches.TryGetValue(sw, out value))
             {
                 return value;
