@@ -52,6 +52,22 @@ namespace ipadr
             {
                 Console.WriteLine("Operand {0,1}", op);
             }
+
+            string sc = cli.subcommand;
+            IPAddress adr;
+            switch (sc)
+            {
+                case "v4":
+                    adr = new IPV4Address();
+                    break;
+                case "v6":
+                    adr = new IPV6Address();
+                    break;
+                default:
+                    Console.WriteLine("Unrecognized subcommand {0,1}", sc);
+                    return;
+
+            }
         }
     }
 }
