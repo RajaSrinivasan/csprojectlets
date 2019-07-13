@@ -59,6 +59,15 @@ namespace ipadr
             {
                 case "v4":
                     adr = new IPV4Address();
+                    bool bstat = adr.Analyze(cli.Operand());
+                    if (bstat)
+                    {
+                        adr.Show();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Please provide a valid IP Address");
+                    }
                     break;
                 case "v6":
                     adr = new IPV6Address();
