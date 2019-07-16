@@ -111,6 +111,7 @@ namespace ipadr
         public void Show()
         {
             Console.WriteLine("Image {0,1}", Image());
+            Console.WriteLine("Address Class: {0,1}" , Class());
         }
 
         public string Image()
@@ -128,6 +129,37 @@ namespace ipadr
             return image;
         }
 
+        public string Class()
+        {
+            if ((0x80000000 & address) == 0)
+            {
+                if ((0x10000000 & address) == 0)
+                {
+                    return "A";
+                }
+                else
+                {
+                    return "loopback";
+                }
+            }
+
+            if ((0x40000000 & address) == 0)
+            {
+                return "B";
+            }
+
+            if ((0x20000000 & address) == 0)
+            {
+                return "C";
+            }
+
+            if ((0x10000000 & address) == 0)
+            {
+                return "D";
+            }
+
+            return "E";
+        }
         public void AnalyzeWithMask(string adr, string mask)
         {
 
