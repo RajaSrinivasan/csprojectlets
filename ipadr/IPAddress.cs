@@ -26,8 +26,8 @@ namespace ipadr
 
 
         private int subnet_bits;
-
-        private Int32 address;
+        private UInt32 address;
+        private IPV4Address subnet_mask;
 
         public IPV4Address()
         {
@@ -51,6 +51,7 @@ namespace ipadr
                         Console.WriteLine("Invalid value for Subnet Mask Length {0,1}", subnet_bits);
                         return false;
                     }
+                    SetSubnetMask(subnet_bits);
                 }
                 catch (Exception e)
                 {
@@ -63,6 +64,7 @@ namespace ipadr
             {
                 ip = adr;
             }
+
             try
             {
                 for (int ocn = 0; ocn < 3; ocn++)
@@ -105,13 +107,29 @@ namespace ipadr
             }
 
             Array.Reverse(octets);
-            address = BitConverter.ToInt32(octets);
+            address = BitConverter.ToUInt32(octets);
             return true;
         }
         public void Show()
         {
             Console.WriteLine("Image {0,1}", Image());
             Console.WriteLine("Address Class: {0,1}" , Class());
+            if (subnet_mask != null)
+            {
+                Console.WriteLine("Subnet Mask: ");
+                subnet_mask.Show();
+                UInt32 network_id, host_id;
+                network_id = address & subnet_mask.address;
+                host_id = address ^ network_id;
+                IPV4Address network = new IPV4Address();
+                network.address = network_id;
+                Console.WriteLine("Network Id");
+                network.Show();
+                IPV4Address host = new IPV4Address();
+                host.address = host_id;
+                Console.WriteLine("Host Id");
+                host.Show();
+            }
         }
 
         public string Image()
@@ -167,6 +185,19 @@ namespace ipadr
         public void AnalyzeMask(string mask)
         {
 
+        }
+
+        public void SetSubnetMask(int subnet_bits)
+        {
+            uint mask = 0;
+            uint bit = 0x80000000;
+            for (int bitnum=0; bitnum < subnet_bits; bitnum++)
+            {
+                uint nextbit = bit >> bitnum;
+                mask |= nextbit;
+            }
+            subnet_mask = new IPV4Address();
+            subnet_mask.address = mask ;
         }
     }
 
