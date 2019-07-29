@@ -17,8 +17,7 @@ namespace ipadr
     public interface IPAddress
     {
         bool Analyze(string adr);
-        void AnalyzeWithMask(string adr, string mask);
-        void AnalyzeMask(string mask);
+        bool SetMask(string mask);
         void Show();
     }
     public class IPV4Address : IPAddress
@@ -51,7 +50,7 @@ namespace ipadr
                         Console.WriteLine("Invalid value for Subnet Mask Length {0,1}", subnet_bits);
                         return false;
                     }
-                    SetSubnetMask(subnet_bits);
+                    SetSubnetMaskBits(subnet_bits);
                 }
                 catch (Exception e)
                 {
@@ -178,16 +177,30 @@ namespace ipadr
 
             return "E";
         }
-        public void AnalyzeWithMask(string adr, string mask)
+
+        public bool SetMask(string mask)
         {
-
+            if (subnet_bits != 0)
+            {
+                Console.WriteLine("Subnet mask already inferred to be {0,1} bits", subnet_bits);
+                return false;
+            }
+            IPV4Address maskadr = new IPV4Address();
+            maskadr.Analyze(mask);
+            if (maskadr.subnet_bits > 0)
+            {
+                Console.WriteLine("Syntax error in mask address");
+                return false;
+            }
+            if (!ValidMask(maskadr))
+            {
+                return false;
+            }
+            subnet_mask = maskadr;
+            return true;
         }
-        public void AnalyzeMask(string mask)
-        {
 
-        }
-
-        public void SetSubnetMask(int subnet_bits)
+        private void SetSubnetMaskBits(int subnet_bits)
         {
             uint mask = 0;
             uint bit = 0x80000000;
@@ -198,6 +211,36 @@ namespace ipadr
             }
             subnet_mask = new IPV4Address();
             subnet_mask.address = mask ;
+        }
+
+        public static bool ValidMask(IPV4Address madr)
+        {
+            uint bit = 0x80000000;
+            int bitnum=0;
+            for ( ; bitnum < 32; bitnum++)
+            {
+                uint nextbit = bit >> bitnum;
+                if ((nextbit & madr.address) == 0)
+                {
+                    break;
+                }
+            }
+            if (bitnum >= 31)
+            {
+                Console.WriteLine("Invalid Mask. No bits left for host id");
+                return false;
+            }
+            Console.WriteLine("Mask length {0,1} bits", bitnum);
+            for (bitnum++ ; bitnum < 32; bitnum++)
+            {
+                uint nextbit = bit >> bitnum;
+                if ((nextbit & madr.address) != 0)
+                {
+                    Console.WriteLine("Invalid network mask. Expecting sequence of 0 bits");
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
@@ -211,13 +254,9 @@ namespace ipadr
         {
             return false;
         }
-        public void AnalyzeWithMask(string adr, string mask)
+        public bool SetMask(string mask)
         {
-
-        }
-        public void AnalyzeMask(string mask)
-        {
-
+            return false;
         }
         public void Show()
         {

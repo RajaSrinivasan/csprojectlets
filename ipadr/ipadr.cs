@@ -58,15 +58,47 @@ namespace ipadr
             switch (sc)
             {
                 case "v4":
+                    bool bstat = false;
                     adr = new IPV4Address();
-                    bool bstat = adr.Analyze(cli.Operand());
-                    if (bstat)
+                    string[] cliargs = cli.Operands();
+                    if (cliargs.Length >= 1)
                     {
+                        adr = new IPV4Address();
+                        bstat = adr.Analyze(cliargs[0]);
+                        if (!bstat)
+                        {
+                            Console.WriteLine("Please provide a valid IP Address");
+                            return;
+                        }
+                        if (cliargs.Length >= 2)
+                        {
+                            bstat = adr.SetMask(cliargs[1]);
+                            if (!bstat)
+                            {
+                                Console.WriteLine("Invalid network mask");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if (cli.Present("m"))
+                            {
+                                string mval = cli.GetString("m");
+                                adr = new IPV4Address();
+                                bstat = adr.Analyze(cliargs[0]);
+                                if (!bstat)
+                                {
+                                    Console.WriteLine("Invalid address for mask validation");
+                                    return;
+                                }
+                                if (IPV4Address.ValidMask((IPV4Address)adr))
+                                {
+                                    Console.WriteLine("Valid Mask");
+                                    return;
+                                }
+                            }
+                        }
                         adr.Show();
-                    }
-                    else
-                    {
-                        Console.WriteLine("Please provide a valid IP Address");
                     }
                     break;
                 case "v6":
