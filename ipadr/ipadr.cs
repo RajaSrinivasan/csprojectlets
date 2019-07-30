@@ -91,7 +91,8 @@ namespace ipadr
                                     Console.WriteLine("Invalid address for mask validation");
                                     return;
                                 }
-                                if (IPV4Address.ValidMask((IPV4Address)adr))
+                                int mlen = IPV4Address.ValidMask((IPV4Address)adr);
+                                if (mlen > 0)
                                 {
                                     Console.WriteLine("Valid Mask");
                                     return;

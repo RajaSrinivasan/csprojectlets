@@ -52,7 +52,7 @@ namespace CommandLine
 
             public Switch(string sf, string lf, string desc, string opt, string d)
             {
-                shortform =  sf;
+                shortform = sf;
                 longform = lf;
                 description = desc;
                 if (opt == null)
@@ -60,12 +60,12 @@ namespace CommandLine
                     argopts = null;
                 }
                 else
-                { 
+                {
                     if (opt.Equals("?") || opt.Equals(":"))
                         argopts = opt;
                     else
                     {
-                        Console.WriteLine("Unrecognized option : {0,0} for switch {1,0}", opt , sf);
+                        Console.WriteLine("Unrecognized option : {0,0} for switch {1,0}", opt, sf);
                         argopts = null;
                     }
                 }
@@ -76,7 +76,7 @@ namespace CommandLine
 
         public List<Switch> switches = new List<Switch>();
         public Version version { get; set; }
-        public string subcommand {get; set;}
+        public string subcommand { get; set; }
 
         private Dictionary<string, string> used_switches = new Dictionary<string, string>();
 
@@ -87,8 +87,8 @@ namespace CommandLine
 
         public Cli()
         {
-            AddSwitch("h", "help", "showhelp", null , "false" );
-            AddSwitch("v", "verbose", "be verbose", null , "true" );
+            AddSwitch("h", "help", "showhelp", null, "false");
+            AddSwitch("v", "verbose", "be verbose", null, "true");
         }
 
         public void Help()
@@ -106,7 +106,7 @@ namespace CommandLine
                 Console.WriteLine($"Subcommands: ");
                 foreach (Subcommand sc in subcommands)
                 {
-                    Console.Write("{0,-12} : " , sc.subcmd);
+                    Console.Write("{0,-12} : ", sc.subcmd);
                     Console.WriteLine(sc.desc);
                 }
             }
@@ -163,44 +163,44 @@ namespace CommandLine
                                 if (idx > args.Length - 1)
                                 {
                                     Console.WriteLine("Switch {0,0} requires a paramater", sw.shortform);
-                                    return -2 ;
+                                    return -2;
                                 }
                                 if (args[idx + 1][0].Equals("-"))
                                 {
                                     Console.WriteLine("Switch {0,0} requires a paramater", sw.shortform);
-                                    return -2 ;
+                                    return -2;
                                 }
                                 used_switches[thissw] = args[idx + 1];
                                 idx++;
                                 return 1;
-    
+
                             case "?":
                                 if (idx >= args.Length - 1)
                                 {
                                     used_switches[thissw] = sw.def;
                                     //Console.WriteLine("Using default {0,1}", sw.def);
-                                    return 0 ;
+                                    return 0;
                                 }
 
-                                if (args[idx + 1].Substring(0,1).Equals("-"))
+                                if (args[idx + 1].Substring(0, 1).Equals("-"))
                                 {
                                     used_switches[thissw] = sw.def;
                                     //Console.WriteLine("Next arg is a switch. Using default {0,1}", sw.def);
-                                    return 0 ;
+                                    return 0;
                                 }
                                 used_switches[thissw] = args[idx + 1];
                                 //Console.WriteLine("Setting value {0,1}", args[idx + 1]);
                                 idx++;
-                                return 1 ;
+                                return 1;
                             default:
                                 Console.WriteLine("Internal Error #1");
-                                break;       
+                                break;
                         }
                     }
                 }
             }
             Console.WriteLine("Unrecognized switch {0,0}", args[idx]);
-            return -1 ;
+            return -1;
         }
         // Analyze - analyze the command line arguments
         //           returns false - to exit right away.
@@ -218,11 +218,11 @@ namespace CommandLine
             int nextarg = 0;
             if (subcommands.Count > 0)
             {
-                Subcommand []scs = subcommands.ToArray();
+                Subcommand[] scs = subcommands.ToArray();
                 // bool foundsubcmd = false;
                 foreach (Subcommand sc in scs)
                 {
-                    if (sc.subcmd.Equals( args[0]))
+                    if (sc.subcmd.Equals(args[0]))
                     {
                         subcommand = args[0];
                         nextarg++;
@@ -231,14 +231,14 @@ namespace CommandLine
                     }
                 }
             }
-            
+
             //Console.WriteLine("Found a subcommand {0,1}", subcommand);
             int cont = 0;
-            while ((cont >= 0) && nextarg < args.Length )
+            while ((cont >= 0) && nextarg < args.Length)
             {
                 string issw = args[nextarg];
                 //Console.WriteLine("Trying {0,1}", issw);
-                if (issw.Substring(0,1).Equals("-"))
+                if (issw.Substring(0, 1).Equals("-"))
                 {
                     // found a switch argument.
                     //Console.WriteLine("Found a switch");
@@ -255,7 +255,7 @@ namespace CommandLine
                 else
                 {
                     //Console.WriteLine("Arg is not a switch {0,1}", args[nextarg]);
-                    for (int oarg=nextarg; oarg < args.Length; oarg++)
+                    for (int oarg = nextarg; oarg < args.Length; oarg++)
                     {
                         operands.Add(args[oarg]);
                     }
@@ -266,11 +266,11 @@ namespace CommandLine
 
             return true;
         }
-        public void AddSubcommand( string sc, string desc)
+        public void AddSubcommand(string sc, string desc)
         {
-            subcommands.Add(new Subcommand( sc, desc ));
+            subcommands.Add(new Subcommand(sc, desc));
         }
-        public void AddSwitch( string sf, string lf, string desc, string opt, string d)
+        public void AddSwitch(string sf, string lf, string desc, string opt, string d)
         {
             switches.Add(new Switch(sf, lf, desc, opt, d));
         }
@@ -283,7 +283,7 @@ namespace CommandLine
         public bool Present(string sw)
         {
             string temp;
-            if (used_switches.TryGetValue(sw,out temp))
+            if (used_switches.TryGetValue(sw, out temp))
             {
                 return true;
             }
@@ -293,7 +293,7 @@ namespace CommandLine
 
         public bool GetBool(string sw)
         {
-            string[] valid_true = { "T", "true" } ;
+            string[] valid_true = { "T", "true" };
             string value;
             if (used_switches.TryGetValue(sw, out value))
             {
@@ -337,8 +337,19 @@ namespace CommandLine
         }
         public string Operand()
         {
-            return string.Join(" ",operands);
+            return string.Join(" ", operands);
         }
 
+        private string GetCanonicalSwitch(string sw)
+        {
+            foreach (Switch s in switches)
+            {
+                if (s.shortform.Equals(sw) || s.longform.Equals(sw))
+                {
+                    return s.shortform;
+                }
+            }
+            return "?";
+        }
     }
 }

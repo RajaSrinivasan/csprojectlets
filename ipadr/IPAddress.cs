@@ -23,14 +23,13 @@ namespace ipadr
     public class IPV4Address : IPAddress
     {
 
-
         private int subnet_bits;
         private UInt32 address;
         private IPV4Address subnet_mask;
 
         public IPV4Address()
         {
-            Console.WriteLine("V4 address analysis");
+            //Console.WriteLine("V4 address analysis");
         }
         public bool Analyze(string adr)
         {
@@ -111,23 +110,30 @@ namespace ipadr
         }
         public void Show()
         {
-            Console.WriteLine("Image {0,1}", Image());
+            Console.WriteLine("IP Address {0,1} -----------------------------------------------", Image());
             Console.WriteLine("Address Class: {0,1}" , Class());
+            if (IsPrivate())
+            {
+                Console.WriteLine("Private address");
+            }
+            else
+            {
+                Console.WriteLine("Routable public address");
+            }
             if (subnet_mask != null)
             {
-                Console.WriteLine("Subnet Mask: ");
-                subnet_mask.Show();
+                Console.WriteLine("Subnet Mask: {0,1}" , subnet_mask.Image());
+               
                 UInt32 network_id, host_id;
                 network_id = address & subnet_mask.address;
                 host_id = address ^ network_id;
                 IPV4Address network = new IPV4Address();
                 network.address = network_id;
-                Console.WriteLine("Network Id");
-                network.Show();
+                Console.WriteLine("Network Id {0,1}" , network.Image() );
                 IPV4Address host = new IPV4Address();
                 host.address = host_id;
-                Console.WriteLine("Host Id");
-                host.Show();
+                Console.WriteLine("Host Id {0,1}" , host.address );
+
             }
         }
 
@@ -192,19 +198,21 @@ namespace ipadr
                 Console.WriteLine("Syntax error in mask address");
                 return false;
             }
-            if (!ValidMask(maskadr))
+            int temp = ValidMask(maskadr);
+            if (temp == 0)
             {
                 return false;
             }
             subnet_mask = maskadr;
+            subnet_bits = temp;
             return true;
         }
 
-        private void SetSubnetMaskBits(int subnet_bits)
+        private void SetSubnetMaskBits(int snb)
         {
             uint mask = 0;
             uint bit = 0x80000000;
-            for (int bitnum=0; bitnum < subnet_bits; bitnum++)
+            for (int bitnum = 0; bitnum < snb; bitnum++)
             {
                 uint nextbit = bit >> bitnum;
                 mask |= nextbit;
@@ -213,7 +221,7 @@ namespace ipadr
             subnet_mask.address = mask ;
         }
 
-        public static bool ValidMask(IPV4Address madr)
+        public static int ValidMask(IPV4Address madr)
         {
             uint bit = 0x80000000;
             int bitnum=0;
@@ -228,7 +236,7 @@ namespace ipadr
             if (bitnum >= 31)
             {
                 Console.WriteLine("Invalid Mask. No bits left for host id");
-                return false;
+                return 0;
             }
             Console.WriteLine("Mask length {0,1} bits", bitnum);
             for (bitnum++ ; bitnum < 32; bitnum++)
@@ -237,11 +245,81 @@ namespace ipadr
                 if ((nextbit & madr.address) != 0)
                 {
                     Console.WriteLine("Invalid network mask. Expecting sequence of 0 bits");
-                    return false;
+                    return 0;
                 }
             }
-            return true;
+            return bitnum ;
         }
+        public bool IsPrivate()
+        {
+            UInt32 oc0, oc1;
+            oc0 = 0xff000000 & address;
+            oc1 = 0x00ff0000 & address;
+
+            // Link Local addresses 169.254.*.*
+            if (oc0 == 0xa9000000)
+            {
+                if (oc1 == 0x00fe0000)
+                {
+                    return true;
+                }
+            }
+
+            if (subnet_bits == 10)
+            {
+                // Carrier grade networks
+
+                if ((oc0 == 0x64000000) && (oc1 == 0x00400000))
+                {
+                    return true;
+                }
+            }
+
+            switch (Class())
+            {
+                case "A":   // 10.*.*.* addresses
+                    if (oc0 == 0x0a000000)
+                    {
+                        return true;
+                    }
+                    break;
+                case "B": // 172.16.*.* - 172.32.*.*
+                    if (oc0 == 0xac000000)
+                    {
+                        oc1 = 0x00ff0000 & address;
+                        oc1 = oc1 >> 16;
+                        if ((oc1 >= 16) && (oc1 <= 31))
+                        {
+                            return true;
+                        }
+                    }
+                    break;
+                case "C": // 192.168.*.* 
+                    if (oc0 == 0xc0000000)
+                    {
+                        if (oc1 == 0x00a80000)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        if (oc0 == 0xa9000000)
+                        {
+                            if (oc1 == 0x00fe0000)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    break;
+                default: 
+                    break;
+            }
+
+            return false;
+        }
+
     }
 
     public class IPV6Address : IPAddress
